@@ -30,9 +30,9 @@ export default function EducationTab({ data, setData, setModalData }) {
                   </button>
                   <button onClick={() => {
                     if (window.confirm('Delete?')) {
-                      const newEd = { ...data.education };
-                      delete newEd[edu.id];
-                      setData({ ...data, education: newEd });
+                      const newEd = { ...data.education };  // make copy of education
+                      delete newEd[edu.id]; // delete corresponding entry in newEd in copy
+                      setData({ ...data, education: newEd }); //  update data with new copy
                     }
                   }} className="text-red-600">
                     <Trash2 className="w-4 h-4" />

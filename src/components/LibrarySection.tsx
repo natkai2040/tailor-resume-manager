@@ -43,13 +43,13 @@ export default function LibrarySection({ title, dataKey, itemType, data, setData
                     <p className="text-sm font-medium">Descriptions ({item.descriptions?.length || 0})</p>
                     <button onClick={() => setModalData({ type: 'description', parentType: dataKey, parentId: item.id })} className="text-xs text-blue-600">+ Add</button>
                   </div>
-                  {(item.descriptions || []).map(desc => (
+                  {(item.descriptions || []).map(desc => ( 
                     <div key={desc.id} className="flex justify-between bg-white p-2 rounded mb-1">
                       <p className="text-sm flex-1">{desc.text}</p>
                       <div className="flex gap-2">
                         <button onClick={() => setModalData({ type: 'description', parentType: dataKey, parentId: item.id, description: desc })} className="text-blue-600"><Edit2 className="w-3 h-3" /></button>
                         <button onClick={() => {
-                          if (window.confirm('Delete?')) {
+                          if (window.confirm('Delete?')) { // delete description
                             const updated = { ...item, descriptions: item.descriptions.filter(d => d.id !== desc.id) };
                             setData({ ...data, [dataKey]: { ...data[dataKey], [item.id]: updated } });
                           }

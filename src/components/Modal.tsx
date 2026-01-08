@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from 'lucide-react';
 
-export default function Modal({  data, setData, modalData, setModalData, generateId }) {
+export default function Modal({ data, setData, modalData, setModalData, generateId }) {
     const [form, setForm] = useState({});
 
     useEffect(() => {
@@ -14,7 +14,7 @@ export default function Modal({  data, setData, modalData, setModalData, generat
 
     const handleSave = () => {
       if (modalData.type === 'education') {
-        const id = form.id || generateId('edu');
+        const id = form.id || generateId('edu'); // generate new id if not editing
         setData({ ...data, education: { ...data.education, [id]: { ...form, id } } });
       } else if (modalData.type === 'description') {
         const parentItem = data[modalData.parentType][modalData.parentId];
@@ -41,7 +41,7 @@ export default function Modal({  data, setData, modalData, setModalData, generat
       [{ name: 'text', label: 'Description', multiline: true, required: true }];
 
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="fixed inset-0 bg-gray-700/50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">{form.id ? 'Edit' : 'Add'} {modalData.type}</h2>
