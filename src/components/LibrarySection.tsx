@@ -1,6 +1,8 @@
 // moved outside ResumeManager to prevent re-definition on each render
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 
+//itemType can be 'job', 'project', 'course'
+// has 
 export default function LibrarySection({ title, dataKey, itemType, data, setData, setModalData }) {
     const list = Object.values(data[dataKey]);
     return (
@@ -38,6 +40,8 @@ export default function LibrarySection({ title, dataKey, itemType, data, setData
                     }} className="text-red-600"><Trash2 className="w-4 h-4" /></button>
                   </div>
                 </div>
+
+                {/* Descriptions Section */}
                 <div className="bg-gray-50 rounded p-3">
                   <div className="flex justify-between items-center mb-2">
                     <p className="text-sm font-medium">Descriptions ({item.descriptions?.length || 0})</p>
@@ -58,6 +62,7 @@ export default function LibrarySection({ title, dataKey, itemType, data, setData
                     </div>
                   ))}
                 </div>
+
               </div>
             ))}
           </div>

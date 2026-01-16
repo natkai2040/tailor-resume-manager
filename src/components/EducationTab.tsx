@@ -1,6 +1,9 @@
 // moved outside ResumeManager to prevent re-definition on each render
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 
+// differs from job, courses, and projects, as it lacks descriptions. 
+// TODO: refactor common code with LibrarySection or Modal
+
 export default function EducationTab({ data, setData, setModalData }) {
   const list = Object.values(data.education);
   return (
@@ -8,7 +11,7 @@ export default function EducationTab({ data, setData, setModalData }) {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Education</h2>
         <button onClick={() => setModalData({ type: 'education' })} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          <Plus className="w-4 h-4" />Add Degree
+          <Plus className="w-4 h-4" />Add Education
         </button>
       </div>
       {list.length === 0 ? (

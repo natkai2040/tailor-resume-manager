@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Download, Upload, Save, Database, AlertCircle, CheckCircle } from 'lucide-react';
 import ProfileTab from './components/ProfileTab';
 import EducationTab from './components/EducationTab';
+import ResumeEditorTab from './components/ResumeEditorTab';
 import LibrarySection from './components/LibrarySection';
 import Modal from './components/Modal';
 import { storage } from './utils/storage';
+import { ResumeModal } from './components/ResumeModal';
 
 // Storage abstraction - works with both window.storage (Claude) and localStorage (GitHub Pages)
 
@@ -16,6 +18,7 @@ const createEmptyData = () => ({
   jobs: {},
   projects: {},
   courses: {},
+  skills: {},
   resumes: {}
 });
 
@@ -100,7 +103,9 @@ function ResumeManager() {
             jobs: { ...data.jobs, ...imported.jobs },
             projects: { ...data.projects, ...imported.projects },
             courses: { ...data.courses, ...imported.courses },
-            education: { ...data.education, ...imported.education }
+            education: { ...data.education, ...imported.education },
+            skills: { ...data.skills, ...imported.skills },
+            resumes: { ...data.resumes, ...imported.resumes }
           });
         } else {
           setData(imported);
@@ -121,7 +126,14 @@ function ResumeManager() {
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <h1 className="text-3xl font-bold mb-2">Resume Manager - Prototype 2</h1>
-          <p className="text-gray-600">Works with localStorage (GitHub Pages) and window.storage (Claude.ai)</p>
+          <p className="text-gray-600">This is a completely static resume manager that helps you edit multiple different versions of your resume.</p>
+          <p className="text-orange-600">- Create jobs/courses/projects, then choose which ones will be seen on a specific resume</p>
+          <p className="text-orange-600">- Create multiple descriptions for a job/course/project, then choose which ones will be seen on a specific resume</p>
+          <p className="text-blue-600">- Press "Save" to temporarily save all jobs/courses/projects locally in LocalHost. Press "Reload" to reset to the last time saved.</p>
+          <p className="text-blue-600">- Press "Export" to save everything as a JSON file. Press "Import" to load a JSON file.</p>
+          <p className="text-purple-600">- Press "Export as DOCX" to write your resume to a DOCX file</p>
+
+          <p className="text-green-600">Your information is not stored or sent anywhere except your browser to ensure your privacy.</p>
         </div>
 
         {status.message && (
@@ -133,17 +145,17 @@ function ResumeManager() {
 
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-wrap gap-2 mb-4">
-            <button onClick={saveData} className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-sm"><Save className="w-4 h-4"/>Save</button>
-            <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-lg text-sm"><Database className="w-4 h-4"/>Reload</button>
-            <button onClick={exportJSON} className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg text-sm"><Download className="w-4 h-4"/>Export</button>
-            <label className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg text-sm cursor-pointer"><Upload className="w-4 h-4"/>Import<input type="file" accept=".json" onChange={importJSON} className="hidden"/></label>
+            <button onClick={saveData} className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"><Save className="w-4 h-4"/>Save</button>
+            <button onClick={loadData} className="flex items-center gap-2 px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm"><Database className="w-4 h-4"/>Reload</button>
+            <button onClick={exportJSON} className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm"><Download className="w-4 h-4"/>Export</button>
+            <label className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm cursor-pointer"><Upload className="w-4 h-4"/>Import<input type="file" accept=".json" onChange={importJSON} className="hidden"/></label>
           </div>
           <p className="text-xs text-gray-500">Auto-save enabled • Last: {new Date(data.lastModified).toLocaleString()}</p>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <div className="flex border-b overflow-x-auto">
-            {['profile', 'education', 'jobs', 'projects', 'courses'].map(tab => (
+            {['profile', 'education', 'jobs', 'projects', 'courses', 'skills', 'resumes'].map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-3 font-medium capitalize ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}>{tab}</button>
             ))}
           </div>
@@ -153,10 +165,19 @@ function ResumeManager() {
             {activeTab === 'jobs' && <LibrarySection title="Work Experience" dataKey="jobs" itemType="job" data={data} setData={setData} setModalData={setModalData} />}
             {activeTab === 'projects' && <LibrarySection title="Projects" dataKey="projects" itemType="project" data={data} setData={setData} setModalData={setModalData} />}
             {activeTab === 'courses' && <LibrarySection title="Courses & Certifications" dataKey="courses" itemType="course" data={data} setData={setData} setModalData={setModalData} />}
+            {activeTab === 'skills' && <LibrarySection title="Skills" dataKey="skills" itemType="skillSection" data={data} setData={setData} setModalData={setModalData} />}
+            {activeTab === 'resumes' && <ResumeEditorTab data={data} setData={setData} setModalData={setModalData} />}
           </div>
         </div>
-
-        <Modal data={data} setData={setData} modalData={modalData} setModalData={setModalData} generateId={generateId} />
+        {modalData && modalData.type === 'resume' ? 
+          (
+            <ResumeModal data={data} setData={setData} modalData={modalData} setModalData={setModalData} generateId={generateId} />
+          ) :
+          
+          (
+            <Modal data={data} setData={setData} modalData={modalData} setModalData={setModalData} generateId={generateId} />
+          )
+        }
       </div>
     </div>
   );

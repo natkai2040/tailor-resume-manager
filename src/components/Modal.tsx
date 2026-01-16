@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from 'lucide-react';
 
+// job, project, course, education, (sub)description modal
 export default function Modal({ data, setData, modalData, setModalData, generateId }) {
     const [form, setForm] = useState({});
 
@@ -14,7 +15,7 @@ export default function Modal({ data, setData, modalData, setModalData, generate
 
     const handleSave = () => {
       if (modalData.type === 'education') {
-        const id = form.id || generateId('edu'); // generate new id if not editing
+        const id = form.id || generateId('edu'); 
         setData({ ...data, education: { ...data.education, [id]: { ...form, id } } });
       } else if (modalData.type === 'description') {
         const parentItem = data[modalData.parentType][modalData.parentId];
@@ -23,7 +24,7 @@ export default function Modal({ data, setData, modalData, setModalData, generate
         const descriptions = form.id ? parentItem.descriptions.map(d => d.id === descId ? newDesc : d) : [...(parentItem.descriptions || []), newDesc];
         setData({ ...data, [modalData.parentType]: { ...data[modalData.parentType], [modalData.parentId]: { ...parentItem, descriptions } } });
       } else {
-        const dataKey = modalData.type === 'job' ? 'jobs' : modalData.type === 'project' ? 'projects' : 'courses';
+        const dataKey = modalData.type === 'job' ? 'jobs' : modalData.type === 'project' ? 'projects' : modalData.type === 'course' ? 'courses' : modalData.type === 'resume' ? 'resumes' : 'skills';
         const id = form.id || generateId(modalData.type);
         setData({ ...data, [dataKey]: { ...data[dataKey], [id]: { ...form, id, descriptions: form.descriptions || [] } } });
       }
@@ -31,13 +32,15 @@ export default function Modal({ data, setData, modalData, setModalData, generate
     };
 
     const fields = modalData.type === 'education' ? 
-      [{ name: 'degree', label: 'Degree', required: true }, { name: 'institution', label: 'Institution', required: true }, { name: 'location' }, { name: 'graduationDate', type: 'month' }, { name: 'gpa' }, { name: 'honors' }] :
+      [{ name: 'degree', label: 'Degree', required: true }, { name: 'institution', label: 'Institution', required: true }, { name: 'major', label: 'Major', required: true }, { name: 'location' }, { name: 'graduationDate', type: 'month' }, { name: 'gpa' }, { name: 'honors' }] :
       modalData.type === 'job' ?
       [{ name: 'title', required: true }, { name: 'company', required: true }, { name: 'location' }, { name: 'startDate', type: 'month' }, { name: 'endDate', type: 'month' }] :
       modalData.type === 'project' ?
-      [{ name: 'name', required: true }, { name: 'context' }, { name: 'date' }, { name: 'link' }] :
+      [{ name: 'name', required: true }, { name: 'context' }, { name: 'date', type: 'month'}, { name: 'link' }] :
       modalData.type === 'course' ?
       [{ name: 'name', required: true }, { name: 'institution' }, { name: 'instructor' }, { name: 'completionDate', type: 'month' }, { name: 'credentialId' }, { name: 'credentialUrl' }] :
+      modalData.type === 'skillSection' ?
+      [{ name: 'name', required: true }] :
       [{ name: 'text', label: 'Description', multiline: true, required: true }];
 
     return (
